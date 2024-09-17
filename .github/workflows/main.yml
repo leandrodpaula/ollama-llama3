@@ -33,13 +33,13 @@ jobs:
           run: |
               gcloud auth configure-docker
       
-        - name: Build/Push Ollama
+        - name: Push Ollama
           run: |
               docker pull ollama/ollama:latest 
               docker tag ollama/ollama:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
               docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
 
-        - name: Build/Push Open WebUI
+        - name: Push Open WebUI
           run: |
               docker pull ghcr.io/open-webui/open-webui:main
               docker tag ghcr.io/open-webui/open-webui:main gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
