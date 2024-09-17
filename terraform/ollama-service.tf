@@ -43,6 +43,10 @@ resource "google_cloud_run_v2_service" "ollama" {
 
       resources {
         startup_cpu_boost = "true"
+        limits = {
+          cpu    = "2"
+          memory = "1024Mi"
+        }
       }
 
       startup_probe {
@@ -65,9 +69,19 @@ resource "google_cloud_run_v2_service" "ollama" {
 
       volume_mounts {
         name = "ollama"
-        mount_path = "/ollama"
+        mount_path = "/root/.ollama"
       }
 
+
+      env{
+        name = "OLLAMA_KEEP_ALIVE"
+        value= "24h"
+      }
+
+      env{
+        name = "OLLAMA_HOST"
+        value= "0.0.0.0" 
+      }
 
     }
 
@@ -83,5 +97,5 @@ resource "google_cloud_run_service_iam_member" "iam_ollama" {
   service  = google_cloud_run_v2_service.ollama.name
   location = google_cloud_run_v2_service.ollama.location
   role     = "roles/run.invoker"
-  member = "serviceAccount:${google_service_account.sa.email}"
+  member = "allUsers"
 }

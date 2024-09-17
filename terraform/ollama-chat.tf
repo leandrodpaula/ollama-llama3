@@ -30,7 +30,7 @@ resource "google_cloud_run_v2_service" "webui" {
     volumes {
         name = "ollama"
         gcs {
-          bucket    = "${google_storage_bucket.ollama.name}/chat"
+          bucket    = google_storage_bucket.webui.name
           read_only = false
         }
     }

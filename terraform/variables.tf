@@ -9,5 +9,5 @@ variable "service_name" { default = "ollama" }
 variable "service_ollama_port" { default = "11434" }
 variable "service_webui_port" { default = "8080" }
     
-variable "service_ollama_image" {default = "ollama/ollama:latest"}
-variable "service_webui_image" {default = "ghcr.io/open-webui/open-webui:main"}
+variable "service_ollama_image" {default = "gcr.io/ollama-lab/ollama:latest"}
+variable "service_webui_image" {default = "gcr.io/ollama-lab/open-webui:latest"}
