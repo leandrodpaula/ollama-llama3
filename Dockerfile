@@ -1,6 +1,8 @@
 FROM ubuntu:latest
 
-RUN curl -fsSL https://ollama.com/install.sh | sh
+COPY ollama . 
+
+RUN ./install.sh
 RUN ollama pull llama3.1
 
 CMD [ "ollama", "run", "llama3.1" ]
