@@ -35,7 +35,8 @@ jobs:
       
         - name: Build/Push Ollama
           run: |
-              docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest .
+              docker pull ollama/ollama:latest 
+              docker tag ollama/ollama:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
               docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
 
         - name: Build/Push Open WebUI
