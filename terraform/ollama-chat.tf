@@ -92,5 +92,5 @@ resource "google_cloud_run_service_iam_member" "iam_webui" {
   service  = google_cloud_run_v2_service.webui.name
   location = google_cloud_run_v2_service.webui.location
   role     = "roles/run.invoker"
-  member = "serviceAccount:${google_service_account.sa.email}"
+  member   = "allUsers"
 }
