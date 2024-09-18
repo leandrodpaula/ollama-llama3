@@ -1,7 +1,7 @@
 
 # Create the Cloud Run service
 resource "google_cloud_run_v2_service" "webui" {
-  name              = "${var.service_name}-chat-${var.environment}"
+  name              = "${var.service_name}-openwebui-${var.environment}"
   location          = var.region
   ingress           = "INGRESS_TRAFFIC_ALL"
   
@@ -45,13 +45,17 @@ resource "google_cloud_run_v2_service" "webui" {
 
       resources {
         startup_cpu_boost = "true"
+        limits = {
+          cpu    = "1"
+          memory = "2Gi"
+        }
       }
 
       startup_probe {
-        initial_delay_seconds = 3
-        timeout_seconds = 3
-        period_seconds = 3
-        failure_threshold = 3
+        initial_delay_seconds = 20
+        timeout_seconds = 30
+        period_seconds = 10
+        failure_threshold = 5
         tcp_socket {
           port = var.service_webui_port
         }
@@ -71,12 +75,67 @@ resource "google_cloud_run_v2_service" "webui" {
       }
 
       env{
-        name = "OLLAMA_BASE_URLS"
+        name = "OLLAMA_BASE_URL"
         value = google_cloud_run_v2_service.ollama.uri
+      }
+      env{
+        name = "OLLAMA_HOST"
+        value = "0.0.0.0"
+      }
+
+      env{
+        name = "OLLAMA_ORIGINS"
+        value = "*"
+      }
+
+      env{
+        name = "WEBUI_AUTH"
+        value = "true"
       }
 
 
+      env{
+        name = "CUSTOM_NAME"
+        value = "Verônica"
+      }
+      
 
+      env{
+        name = "ENABLE_OAUTH_SIGNUP"
+        value = "true"
+      }
+      env{
+        name = "GOOGLE_CLIENT_ID"
+        value = var.oauth_client_id
+      }
+      env{
+        name = "GOOGLE_CLIENT_SECRET"
+        value = var.oauth_client_secret
+      }
+      env{
+        name = "OAUTH_PROVIDER_NAME"
+        value = "Google"
+      }
+
+      env{
+        name = "MODEL_FILTER_LIST"
+        value = "llama3.1:3b;gemma2:latest"
+      }
+
+      env{
+        name = "ENABLE_COMMUNITY_SHARING"
+        value = "false"
+      }
+
+      env{
+        name = "OAUTH_MERGE_ACCOUNTS_BY_EMAIL"
+        value = "true"
+      }
+
+      env{
+        name = "DEFAULT_LOCALE"
+        value = "pt-br"
+      }
 
     }
 
