@@ -47,7 +47,7 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
   deploy_hml:
     runs-on: hashicorp/terraform:light
-    if: github.event_name == 'workflow_dispatch'
+    
     needs: build-and-push
     environment: hml
     env:
@@ -57,41 +57,7 @@ jobs:
       TF_VAR_region: us-east1
       TF_VAR_oauth_client_id: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
       TF_VAR_oauth_client_secret: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.0
-
-      - name: Terraform Init
-        run: terraform init -backend-config="bucket=${TF_VAR_project_id}-tfstate" -backend-config="prefix=${TF_VAR_service_name}/${TF_VAR_environment}"  
-
-      - name: Terraform Plan
-        run: terraform plan
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-
-
-  deploy_prd:
-    runs-on: hashicorp/terraform:light
     if: github.event_name == 'workflow_dispatch'
-    needs: 
-      - build-and-push
-      - deploy_hml
-    environment: prd
-    env:
-      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
-      TF_VAR_service_name: ollama
-      TF_VAR_environment: prd
-      TF_VAR_region: us-east1
-      TF_VAR_oauth_client_id: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-      TF_VAR_oauth_client_secret: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -109,3 +75,4 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+
