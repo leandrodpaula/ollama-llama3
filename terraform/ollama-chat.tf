@@ -71,7 +71,7 @@ resource "google_cloud_run_v2_service" "webui" {
 
       volume_mounts {
         name = "ollama"
-        mount_path = "/open-webui-data"
+        mount_path = "/openwebui"
       }
 
       env{
@@ -144,17 +144,17 @@ resource "google_cloud_run_v2_service" "webui" {
 
       env{
         name = "STATIC_DIR"
-        value = "/open-webui-data/static"
+        value = "/openwebui/static"
       }
 
       env{
         name = "DATA_DIR"
-        value = "/open-webui-data/data"
+        value = "/openwebui/data"
       }
 
       env{
         name = "FRONTEND_BUILD_DIR"
-        value = "/open-webui-data/front"
+        value = "/openwebui/front"
       }
 
       env{
@@ -164,7 +164,7 @@ resource "google_cloud_run_v2_service" "webui" {
 
       env{
         name = "FUNCTIONS_DIR"
-        value = "/open-webui-data/functions"
+        value = "/openwebui/functions"
       }
 
       env{
