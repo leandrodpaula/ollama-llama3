@@ -62,12 +62,6 @@ jobs:
       TF_VAR_oauth_client_secret: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
     
     steps:
-      - name: Wait for approval
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ steps.generate_token.outputs.token }}
-          approvers: myteam
-          minimum-approvals: 1
 
       - name: Checkout code
         uses: actions/checkout@v2
