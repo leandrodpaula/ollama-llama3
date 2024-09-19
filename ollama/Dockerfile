@@ -1,10 +1,15 @@
-FROM ubuntu:latest
+FROM ollama/ollama:latest
 
 
 USER root
-RUN curl -fsSL https://ollama.com/install.sh | sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-CMD [ "/usr/bin/bash", "/entrypoint.sh" ]
+RUN /usr/bin/bash /entrypoint.sh
+
+# Exponha a porta do serviço Ollama
+EXPOSE 11434
+
+
+ENTRYPOINT [ "/usr/bin/bash", "/entrypoint.sh" ]
 
