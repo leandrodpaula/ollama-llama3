@@ -3,7 +3,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "< 6.0.0"
+      version = "<= 6.3.0"
     }
     mongodbatlas = {
       source  = "mongodb/mongodbatlas"
