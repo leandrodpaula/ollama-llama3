@@ -10,37 +10,100 @@ on:
 
 
 jobs:
-    build-and-push:
-        runs-on: ubuntu-latest
-        environment: hml
-        env:
-            ACTIONS_RUNNER_DEBUG: true  # Habilita o modo debug
+  build-and-push:
+    runs-on: ubuntu-latest
+    environment: hml
+    env:
+      ACTIONS_RUNNER_DEBUG: true  # Habilita o modo debug
 
-        steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
         
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
         
-        - name: Authenticate to Google Cloud
-          uses: google-github-actions/auth@v2
-          with:
-            credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
         
 
-        - name: Configure Docker to use gcloud as a credential helper
-          run: |
-              gcloud auth configure-docker
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud auth configure-docker
       
-        - name: Push Ollama
-          run: |
-              docker pull ollama/ollama:latest 
-              docker tag ollama/ollama:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
-              docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
+      - name: Push Ollama
+        run: |
+          cd /ollama
+          docker build -t ollama/ollama:latest .
+          docker tag ollama/ollama:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
 
-        - name: Push Open WebUI
-          run: |
-              docker pull ghcr.io/open-webui/open-webui:main
-              docker tag ghcr.io/open-webui/open-webui:main gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
-              docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
+      - name: Push Open WebUI
+        run: |
+          docker pull ghcr.io/open-webui/open-webui:main
+          docker tag ghcr.io/open-webui/open-webui:main gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
+  deploy_hml:
+    runs-on: hashicorp/terraform:light
+    if: github.event_name == 'workflow_dispatch'
+    needs: build-and-push
+    environment: hml
+    env:
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_service_name: ollama
+      TF_VAR_environment: hml
+      TF_VAR_region: us-east1
+      TF_VAR_oauth_client_id: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+      TF_VAR_oauth_client_secret: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${TF_VAR_project_id}-tfstate" -backend-config="prefix=${TF_VAR_service_name}/${TF_VAR_environment}"  
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+
+  deploy_prd:
+    runs-on: hashicorp/terraform:light
+    if: github.event_name == 'workflow_dispatch'
+    needs: build-and-push
+    environment: prd
+    env:
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
+      TF_VAR_service_name: ollama
+      TF_VAR_environment: prd
+      TF_VAR_region: us-east1
+      TF_VAR_oauth_client_id: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+      TF_VAR_oauth_client_secret: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${TF_VAR_project_id}-tfstate" -backend-config="prefix=${TF_VAR_service_name}/${TF_VAR_environment}"  
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
