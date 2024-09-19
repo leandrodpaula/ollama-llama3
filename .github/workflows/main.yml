@@ -81,10 +81,14 @@ jobs:
           terraform init -backend-config="bucket=${TF_VAR_project_id}-tfstate" -backend-config="prefix=${TF_VAR_service_name}/${TF_VAR_environment}"  
 
       - name: Terraform Plan
-        run: terraform plan
+        run: |
+          cd terraform && 
+          terraform plan
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: |
+          cd terraform && 
+          terraform apply -auto-approve
 
 
   deploy_prd:
