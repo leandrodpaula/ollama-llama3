@@ -27,16 +27,5 @@ for model in "${models[@]}"; do
 done
 
 
-echo "🔴 Retrieve LLAMA2 model..."
-ollama pull llama2
-echo "🟢 Done!"
-
-# Pause for Ollama to start.
-sleep 5
-
-echo "🔴 Retrieve LLAMA3 model..."
-ollama pull llama3
-echo "🟢 Done!"
-
 # Wait for Ollama process to finish.
 wait $pid
