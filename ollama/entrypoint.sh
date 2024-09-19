@@ -27,5 +27,19 @@ for model in "${models[@]}"; do
 done
 
 
+# Pause for Ollama to start.
+sleep 5
+
+# Read folders in the specified directory.
+model_folders=$(ls /ollama/models/manifests/registry.ollama.ai/library)
+
+# Print the folders.
+echo "🔴 Available model folders:"
+for folder in $model_folders; do
+  echo "🟢 Run $folder"
+  ollama run $folder &
+  echo "🟢 Running $folder"
+done
+
 # Wait for Ollama process to finish.
 wait $pid
