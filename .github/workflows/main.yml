@@ -50,7 +50,7 @@ jobs:
           docker tag ghcr.io/open-webui/open-webui:main gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
   deploy_hml:
-    runs-on: hashicorp/terraform:light
+    runs-on: ubuntu-latest
     needs: build-and-push
     environment: hml
     env:
