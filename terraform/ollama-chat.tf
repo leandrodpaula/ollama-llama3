@@ -71,7 +71,7 @@ resource "google_cloud_run_v2_service" "webui" {
 
       volume_mounts {
         name = "ollama"
-        mount_path = "/app/backend/data"
+        mount_path = "/open-webui-data"
       }
 
       env{
@@ -140,6 +140,36 @@ resource "google_cloud_run_v2_service" "webui" {
       env{
         name = "START_MODELS"
         value = var.start_models
+      }
+
+      env{
+        name = "STATIC_DIR"
+        value = "/open-webui-data/static"
+      }
+
+      env{
+        name = "DATA_DIR"
+        value = "/open-webui-data/data"
+      }
+
+      env{
+        name = "FRONTEND_BUILD_DIR"
+        value = "/open-webui-data/front"
+      }
+
+      env{
+        name = "ENABLE_ADMIN_CHAT_ACCESS"
+        value = "false"
+      }
+
+      env{
+        name = "FUNCTIONS_DIR"
+        value = "/open-webui-data/functions"
+      }
+
+      env{
+        name = "ADMIN_EMAIL"
+        value = "leandro.sys@gmail.com"
       }
 
     }
