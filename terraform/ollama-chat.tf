@@ -137,6 +137,11 @@ resource "google_cloud_run_v2_service" "webui" {
         value = "pt-br"
       }
 
+      env{
+        name = "START_MODELS"
+        value = var.start_models
+      }
+
     }
 
    

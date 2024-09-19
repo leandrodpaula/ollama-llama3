@@ -51,7 +51,6 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/open-webui:latest
   deploy_hml:
     runs-on: hashicorp/terraform:light
-    if: github.event_name == 'workflow_dispatch'
     needs: build-and-push
     environment: hml
     env:

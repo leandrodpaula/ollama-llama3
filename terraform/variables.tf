@@ -14,3 +14,5 @@ variable "service_webui_image" {default = "gcr.io/ollama-lab/open-webui:latest"}
 
 variable "oauth_client_id" {}
 variable "oauth_client_secret" {}
+
+variable "start_models" { default="llama3.1;llama2" }
