@@ -35,7 +35,7 @@ jobs:
       
       - name: Push Ollama
         run: |
-          cd /ollama
+          cd ollama
           docker build -t ollama/ollama:latest .
           docker tag ollama/ollama:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
@@ -80,7 +80,9 @@ jobs:
   deploy_prd:
     runs-on: hashicorp/terraform:light
     if: github.event_name == 'workflow_dispatch'
-    needs: build-and-push
+    needs: 
+      - build-and-push
+      - deploy_hml
     environment: prd
     env:
       TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
