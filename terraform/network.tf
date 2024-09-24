@@ -11,7 +11,6 @@ resource "google_compute_subnetwork" "subnetwork" {
   ip_cidr_range = var.subnet_cidr
   region        = var.region
   network       = google_compute_network.network.self_link
-  private_ip_google_access = true
   stack_type       = "IPV4_IPV6"
   ipv6_access_type = "EXTERNAL"
 }
@@ -21,6 +20,12 @@ resource "google_compute_address" "ollama_internal_ip" {
   name         = "${var.project_id}-instance-internal-ip-${var.environment}"
   subnetwork   = google_compute_subnetwork.subnetwork.id
   address_type = "INTERNAL"
+  region       = var.region
+}
+
+
+resource "google_compute_address" "ollama_external_ip" {
+  name         = "${var.project_id}-instance-external-ip-${var.environment}"
   region       = var.region
 }
 

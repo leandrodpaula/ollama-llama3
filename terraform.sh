@@ -7,6 +7,7 @@ export TF_VAR_region="us-central1"
 export TF_VAR_zone="us-central1-a"
 export TF_VAR_service_name="ollama"
 export GOOGLE_APPLICATION_CREDENTIALS="/home/leo/keys/ollama-lab-2d397b0f2e3f.json"
+export TF_VAR_create_webui="false"
 # Navigate to the Terraform configuration directory
 cd terraform
 

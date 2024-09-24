@@ -17,3 +17,5 @@ variable "oauth_client_secret" { default = "xxxxx"}
 
 variable "zone" { default = "us-east1-b" }
 variable "create_instance_group" { default = false }
+
+variable "create_webui" { default = true }

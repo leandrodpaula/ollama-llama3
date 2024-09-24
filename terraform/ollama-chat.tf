@@ -1,6 +1,7 @@
 
 # Create the Cloud Run service
 resource "google_cloud_run_v2_service" "webui" {
+  count             = var.create_webui ? 1 : 0
   name              = "${var.service_name}-openwebui-${var.environment}"
   location          = var.region
   ingress           = "INGRESS_TRAFFIC_ALL"
@@ -178,8 +179,10 @@ resource "google_cloud_run_v2_service" "webui" {
 
 # Allow unauthenticated users to invoke the service
 resource "google_cloud_run_service_iam_member" "iam_webui" {
-  service  = google_cloud_run_v2_service.webui.name
-  location = google_cloud_run_v2_service.webui.location
+  count    = var.create_webui ? 1 : 0
+  service  = google_cloud_run_v2_service.webui[0].name
+  location = google_cloud_run_v2_service.webui[0].location
   role     = "roles/run.invoker"
   member   = "allUsers"
+  depends_on = [google_cloud_run_v2_service.webui]
 }

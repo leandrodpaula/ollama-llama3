@@ -2,7 +2,6 @@ resource "google_compute_instance" "ollama" {
   count        = var.create_instance_group ? 0 : 1
   name         = "${var.service_name}-models-${var.environment}"
   machine_type = "e2-medium"
-  can_ip_forward = true
   tags = [var.project_id, var.service_name, "http", "internal","http-server", "https-server"]
   zone = var.zone
     boot_disk {
@@ -26,6 +25,9 @@ resource "google_compute_instance" "ollama" {
     network_ip = google_compute_address.ollama_internal_ip.address
     stack_type = "IPV4_ONLY"
     nic_type = "GVNIC"
+    access_config {
+      nat_ip = google_compute_address.ollama_external_ip.address
+    }
   }
 
   metadata_startup_script = file("../ollama/startup-script.sh")
@@ -36,3 +38,4 @@ resource "google_compute_instance" "ollama" {
     preemptible         = false
   }
 }
+

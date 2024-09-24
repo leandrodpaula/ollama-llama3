@@ -19,6 +19,15 @@ case "$ARCH" in
     *) error "Unsupported architecture: $ARCH" ;;
 esac
 
+
+
+# Mount the attached disk "ollama-disk" in /root/.ollama
+status "Mounting attached disk in /root/.ollama..."
+sudo mkdir -p /root/.ollama
+sudo mount /dev/disk/by-id/google-ollama-disk /root/.ollama
+
+
+
 # Download and install Ollama
 status "Downloading and installing Ollama..."
 

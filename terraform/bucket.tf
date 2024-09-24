@@ -5,7 +5,7 @@ resource "google_storage_bucket" "webui" {
   storage_class = "NEARLINE"
   public_access_prevention = "enforced"
   depends_on = [google_project_service.googleapis]
-  force_destroy = false
+  force_destroy = true
   uniform_bucket_level_access = false
   labels = {
     environment  = var.environment
