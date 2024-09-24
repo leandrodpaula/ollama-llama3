@@ -24,7 +24,12 @@ status "Downloading and installing Ollama..."
 
 curl -fsSL https://ollama.com/install.sh | sh
 
+if [ ! -x /usr/local/bin/ollama ]; then
+    error "Ollama executable not found in /usr/local/bin"
+fi
 
+if [  -x /usr/local/bin/ollama ]; then
+    error "Ollama executable is found in /usr/local/bin"
 
 # Create a systemd service for Ollama
 
@@ -52,3 +57,5 @@ sudo systemctl enable ollama.service
 sudo systemctl start ollama.service
 
 status "Ollama service created and started."
+
+fi
