@@ -76,7 +76,7 @@ resource "google_cloud_run_v2_service" "webui" {
 
       env{
         name = "OLLAMA_BASE_URL"
-        value = google_cloud_run_v2_service.ollama.uri
+        value = "${google_compute_address.ollama_internal_ip.address}:${var.service_ollama_port}"
       }
       env{
         name = "OLLAMA_HOST"
@@ -135,11 +135,6 @@ resource "google_cloud_run_v2_service" "webui" {
       env{
         name = "DEFAULT_LOCALE"
         value = "pt-br"
-      }
-
-      env{
-        name = "START_MODELS"
-        value = var.start_models
       }
 
       env{

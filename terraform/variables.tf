@@ -12,7 +12,8 @@ variable "service_webui_port" { default = "8080" }
 variable "service_ollama_image" {default = "gcr.io/ollama-lab/ollama:latest"}
 variable "service_webui_image" {default = "gcr.io/ollama-lab/open-webui:latest"}
 
-variable "oauth_client_id" {}
-variable "oauth_client_secret" {}
+variable "oauth_client_id" { default = "xxxxx"}
+variable "oauth_client_secret" { default = "xxxxx"}
 
-variable "start_models" { default="llama3.1;llama2" }
+variable "zone" { default = "us-east1-b" }
+variable "create_instance_group" { default = false }
