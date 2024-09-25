@@ -1,14 +1,19 @@
 resource "google_compute_instance" "ollama" {
   count        = var.create_instance_group ? 0 : 1
   name         = "${var.service_name}-models-${var.environment}"
-  machine_type = "e2-medium"
+  machine_type = "n2-standard-2"
   tags = [var.project_id, var.service_name, "http", "internal","http-server", "https-server"]
   zone = var.zone
     boot_disk {
+      device_name = "${var.service_name}-boot-${var.environment}"
+      auto_delete = true
+        
       initialize_params {
-        image =  "ubuntu-os-cloud/ubuntu-2004-lts"
+        image = "debian-cloud/debian-12"        
       }
     }
+
+  
 
     attached_disk {
         device_name = "ollama-disk"

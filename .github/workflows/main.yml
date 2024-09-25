@@ -35,14 +35,6 @@ jobs:
         run: |
           gcloud auth configure-docker
       
-      - name: Build Ollama
-        run: |
-          cd ollama
-          docker build -t ollama/ollama:latest .
-      - name: Push Ollama
-        run: |
-          docker tag ollama/ollama:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/ollama:latest
 
       - name: Push Open WebUI
         run: |
