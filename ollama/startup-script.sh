@@ -1,80 +1,78 @@
-sudo apt-get update -y
-sudo apt-get install -y curl
+#!/bin/bash
 
-# Detect architecture
-ARCH=$(uname -m)
-case "$ARCH" in
-    x86_64) ARCH="amd64" ;;
-    aarch64|arm64) ARCH="arm64" ;;
-    *) echo "Unsupported architecture: $ARCH" ;;
-esac
 
-# Mount the attached disk "ollama-disk" in /root/.ollama
-echo "Mounting attached disk in /root/.ollama..."
-sudo mkdir -p /root/.ollama
-sudo chmod -R 777 /root/.ollama
+echo "Starting Ollama startup script..."
+
+# Check if the disk is attached
+if [ ! -e /dev/disk/by-id/google-ollama-disk-models ]; then
+    echo "Disk not attached. Exiting..."
+    exit 1
+fi
+
+# Mount the attached disk "ollama-disk" in /ollama
+echo "Mounting attached disk in /usr/share/ollama/.ollama/"
+sudo mkdir -p /usr/share/ollama/.ollama/models/
+sudo chmod -R 777 /usr/share/ollama/.ollama/models/
+sudo ls -la /usr/share/ollama/.ollama/models/
 
 # Check if the disk is already formatted
 if ! blkid /dev/disk/by-id/google-ollama-disk; then
     echo "Disk is not formatted. Formatting as ext4..."
-    sudo mkfs.ext4 -F /dev/disk/by-id/google-ollama-disk
-
+    sudo mkfs.ext4 -F /dev/disk/by-id/google-ollama-models-disk
 fi
 
 # Mount the disk
-sudo mount /dev/disk/by-id/google-ollama-disk /root/.ollama
+echo "Mounting the disk..."
+sudo mount /dev/disk/by-id/google-ollama-models-disk /usr/share/ollama/.ollama/models
+
 
 # Ensure the disk is mounted on reboot
-sudo bash -c 'echo "/dev/disk/by-id/google-ollama-disk /root/.ollama ext4 defaults 0 0" >> /etc/fstab'
-
+sudo bash -c 'echo "/dev/disk/by-id/google-ollama-models-disk /usr/share/ollama/.ollama/models ext4 defaults 0 0" >> /etc/fstab'
 
 # Download and install Ollama
-echo "Downloading and installing Ollama..."
 
-curl -fsSL https://ollama.com/install.sh | sh
 
 if [ ! -x /usr/local/bin/ollama ]; then
-    error "Ollama executable not found in /usr/local/bin"
+    echo "Downloading and installing Ollama..."
+    sudo curl -fsSL https://ollama.com/install.sh | sh
 fi
 
-if [  -x /usr/local/bin/ollama ]; then
-    echo "Ollama executable is found in /usr/local/bin"
 
-# Create a systemd service for Ollama
-
-echo "Creating systemd service for Ollama..."
-
+#Create service Ollama Serve
+# Create service Ollama Serve
+echo "Creating Ollama Serve service..."
 sudo bash -c 'cat <<EOF > /etc/systemd/system/ollama.service
 [Unit]
-Description=Ollama Service
+Description=Ollama Serve
 After=network.target
 
 [Service]
 ExecStart=/usr/local/bin/ollama serve
 Restart=always
 User=root
-
+Group=root
+RestartSec=3
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 [Install]
 WantedBy=multi-user.target
 EOF'
 
+# Reload systemd to recognize the new service
 sudo systemctl daemon-reload
-sudo systemctl enable ollama.service
-sudo systemctl start ollama.service
 
-echo "Ollama service started."
+# Enable the service to start on boot
+sudo systemctl enable ollama
 
-if ! sudo ollama list | grep -q "llama3.1"; then
-    echo "Pulling llama3.1"
-    sudo ollama pull llama3.1
-    sudo ollama run llama3.1
+sudo systemctl start ollama
+
+
+
+# Check if the model llama3.1 exists
+if /usr/local/bin/ollama list | grep -q 'llama3.1'; then
+    echo "Model llama3.1 found."
+else
+    echo "Model llama3.1 not found. Starting Ollama..."
+    sudo /usr/local/bin/ollama pull llama3.1
+    echo "Ollama started."
 fi
-
-if ! sudo ollama list | grep -q "llama2"; then
-    echo "Pulling llama2"
-    sudo ollama pull llama2
-    sudo ollama run llama2
-fi
-
-
 

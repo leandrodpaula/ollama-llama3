@@ -19,3 +19,4 @@ variable "zone" { default = "us-east1-b" }
 variable "create_instance_group" { default = false }
 
 variable "create_webui" { default = true }
+variable "start_models" { default = "llama3.1;llama2" }

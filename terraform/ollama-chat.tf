@@ -1,7 +1,6 @@
 
 # Create the Cloud Run service
 resource "google_cloud_run_v2_service" "webui" {
-  count             = var.create_webui ? 1 : 0
   name              = "${var.service_name}-openwebui-${var.environment}"
   location          = var.region
   ingress           = "INGRESS_TRAFFIC_ALL"
@@ -72,12 +71,12 @@ resource "google_cloud_run_v2_service" "webui" {
 
       volume_mounts {
         name = "ollama"
-        mount_path = "/openwebui"
+        mount_path = "/app/backend/data"
       }
 
       env{
         name = "OLLAMA_BASE_URL"
-        value = "${google_compute_address.ollama_internal_ip.address}:${var.service_ollama_port}"
+        value = google_cloud_run_v2_service.ollama.uri
       }
       env{
         name = "OLLAMA_HOST"
@@ -138,35 +137,7 @@ resource "google_cloud_run_v2_service" "webui" {
         value = "pt-br"
       }
 
-      env{
-        name = "STATIC_DIR"
-        value = "/openwebui/static"
-      }
-
-      env{
-        name = "DATA_DIR"
-        value = "/openwebui/data"
-      }
-
-      env{
-        name = "FRONTEND_BUILD_DIR"
-        value = "/openwebui/front"
-      }
-
-      env{
-        name = "ENABLE_ADMIN_CHAT_ACCESS"
-        value = "false"
-      }
-
-      env{
-        name = "FUNCTIONS_DIR"
-        value = "/openwebui/functions"
-      }
-
-      env{
-        name = "ADMIN_EMAIL"
-        value = "leandro.sys@gmail.com"
-      }
+     
 
     }
 
@@ -179,10 +150,8 @@ resource "google_cloud_run_v2_service" "webui" {
 
 # Allow unauthenticated users to invoke the service
 resource "google_cloud_run_service_iam_member" "iam_webui" {
-  count    = var.create_webui ? 1 : 0
-  service  = google_cloud_run_v2_service.webui[0].name
-  location = google_cloud_run_v2_service.webui[0].location
+  service  = google_cloud_run_v2_service.webui.name
+  location = google_cloud_run_v2_service.webui.location
   role     = "roles/run.invoker"
   member   = "allUsers"
-  depends_on = [google_cloud_run_v2_service.webui]
 }
