@@ -44,9 +44,10 @@ resource "google_cloud_run_v2_service" "ollama" {
       resources {
         startup_cpu_boost = "true"
         limits = {
-          cpu    = "4"
-          memory = "16Gi"
+          cpu    = "6"
+          memory = "20Gi"
         }
+        cpu_idle = false
       }
 
       startup_probe {

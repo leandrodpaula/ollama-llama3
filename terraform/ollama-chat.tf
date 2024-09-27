@@ -4,9 +4,9 @@ resource "google_cloud_run_v2_service" "webui" {
   name              = "${var.service_name}-openwebui-${var.environment}"
   location          = var.region
   ingress           = "INGRESS_TRAFFIC_ALL"
-  
+  deletion_protection=false
   lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
     prevent_destroy = false
   }
   timeouts {
@@ -24,7 +24,7 @@ resource "google_cloud_run_v2_service" "webui" {
     }
     scaling {
       min_instance_count = 0
-      max_instance_count = 5
+      max_instance_count = 2
     }
 
     volumes {
@@ -46,9 +46,10 @@ resource "google_cloud_run_v2_service" "webui" {
       resources {
         startup_cpu_boost = "true"
         limits = {
-          cpu    = "1"
-          memory = "2Gi"
+          cpu    = "2"
+          memory = "4Gi"
         }
+        cpu_idle = true
       }
 
       startup_probe {
